@@ -1,0 +1,13 @@
+node_modules
+dist
+.git
+.gitignore
+README.md
+*.log
+Dockerfile
+.dockerignore
+.editorconfig
+template_pages
+template_text.txt
+extracted_assets
+title_bottom_left.png
