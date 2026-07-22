@@ -1,6 +1,6 @@
 import React from 'react';
 import { INVENTORY, formatPKR } from '../../data/inventoryData';
-import { Plus, Trash2, Download, Calendar, User, Upload } from 'lucide-react';
+import { Plus, Trash2, Download, Building2, Calendar, User, Upload, ChevronDown } from 'lucide-react';
 
 export default function ModularCalculator({
   projectName,
@@ -25,9 +25,7 @@ export default function ModularCalculator({
   setBalloonPayments,
   calculation,
   onDownloadPdf,
-  isGeneratingPdf,
-  customLayoutImage,
-  setCustomLayoutImage
+  isGeneratingPdf
 }) {
 
   const handleUnitChange = (e) => {
@@ -66,36 +64,37 @@ export default function ModularCalculator({
   const schedule = calculation?.schedule || [];
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-2 sm:p-4 lg:p-6 font-sans">
-      <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200 text-slate-800">
+    <div className="w-full max-w-7xl mx-auto p-2 sm:p-4 lg:p-6 font-sans pb-24 lg:pb-6">
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl overflow-hidden border border-gray-200 text-slate-800">
         
-        {/* Top Header Bar with Logo */}
-        <div className="bg-[#003366] p-6 lg:p-8 text-white flex justify-between items-center shadow-md">
-          <div className="flex items-center gap-4">
+        {/* Top Header Bar */}
+        <div className="bg-[#003366] p-4 sm:p-6 lg:p-8 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-md">
+          <div className="flex items-center gap-3 sm:gap-4">
             <img
               src="/assets/techno_one_logo.png"
               alt="Techno One Logo"
-              className="h-12 w-auto object-contain filter drop-shadow"
+              className="h-9 sm:h-12 w-auto object-contain filter drop-shadow"
             />
             <div>
-              <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight font-heading flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase tracking-tight font-heading">
                 {projectName || 'TECHNO ONE'}
               </h1>
-              <p className="text-[#D4AF37] font-semibold mt-0.5 tracking-widest text-xs sm:text-sm">
-                MODULAR PAYMENT CALCULATOR & OFFER GENERATOR
+              <p className="text-[#D4AF37] font-semibold mt-0.5 tracking-wider text-[11px] sm:text-xs lg:text-sm">
+                MODULAR PAYMENT CALCULATOR
               </p>
             </div>
           </div>
         </div>
 
+        {/* Responsive Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12">
           
           {/* Left Column Controls (4 Cols) */}
-          <div className="lg:col-span-4 bg-slate-50 p-6 lg:p-8 border-r border-gray-200 space-y-6">
+          <div className="lg:col-span-4 bg-slate-50 p-4 sm:p-6 lg:p-8 border-b lg:border-b-0 lg:border-r border-gray-200 space-y-5">
             
             {/* Project & Unit Section */}
             <section>
-              <h2 className="text-xs font-black text-gray-400 uppercase mb-3 tracking-wider">PROJECT & UNIT</h2>
+              <h2 className="text-xs font-black text-gray-400 uppercase mb-2.5 tracking-wider">PROJECT & UNIT</h2>
               <div className="space-y-3">
                 <div>
                   <label className="text-[10px] font-bold text-gray-400 ml-1">PROJECT NAME</label>
@@ -104,26 +103,29 @@ export default function ModularCalculator({
                     value={projectName}
                     onChange={(e) => setProjectName(e.target.value)}
                     placeholder="Project Name"
-                    className="w-full p-2.5 border border-gray-300 rounded-lg font-bold text-[#003366] text-sm focus:outline-none focus:ring-2 focus:ring-[#003366]"
+                    className="w-full p-2.5 text-sm border border-gray-300 rounded-lg font-bold text-[#003366] focus:outline-none focus:ring-2 focus:ring-[#003366]"
                   />
                 </div>
 
                 <div>
                   <label className="text-[10px] font-bold text-gray-400 ml-1">SELECT UNIT</label>
-                  <select
-                    value={selectedUnit?.unitNo || ''}
-                    onChange={handleUnitChange}
-                    className="w-full p-2.5 border border-gray-300 rounded-lg font-bold text-slate-800 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003366]"
-                  >
-                    {INVENTORY.map((u) => (
-                      <option key={u.unitNo} value={u.unitNo}>
-                        Unit {u.unitNo} ({u.floor}) - {u.areaSqFt} SqFt
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      value={selectedUnit?.unitNo || ''}
+                      onChange={handleUnitChange}
+                      className="w-full p-2.5 pr-8 border border-gray-300 rounded-lg font-bold text-slate-800 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#003366] appearance-none cursor-pointer"
+                    >
+                      {INVENTORY.map((u) => (
+                        <option key={u.unitNo} value={u.unitNo}>
+                          Unit {u.unitNo} ({u.floor}) - {u.areaSqFt} SqFt
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="w-4 h-4 text-gray-400 absolute right-2.5 top-3.5 pointer-events-none" />
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2.5">
                   <div>
                     <label className="text-[10px] font-bold text-gray-400 ml-1">AREA (SQFT)</label>
                     <input
@@ -148,7 +150,7 @@ export default function ModularCalculator({
 
             {/* Plan Logic Section */}
             <section className="pt-4 border-t border-gray-200">
-              <h2 className="text-xs font-black text-gray-400 uppercase mb-3 tracking-wider">PLAN LOGIC</h2>
+              <h2 className="text-xs font-black text-gray-400 uppercase mb-2.5 tracking-wider">PLAN LOGIC</h2>
               
               {/* Plan Mode Selector */}
               <div className="grid grid-cols-3 gap-1 p-1 bg-gray-200 rounded-lg mb-3 text-xs font-bold">
@@ -174,7 +176,7 @@ export default function ModularCalculator({
 
               {planType !== 'full_payment' ? (
                 <>
-                  <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div className="grid grid-cols-2 gap-2.5 mb-3">
                     <div>
                       <label className="text-[10px] font-bold text-gray-400 ml-1">DOWNPAY %</label>
                       <input
@@ -225,11 +227,11 @@ export default function ModularCalculator({
             {/* Balloon Payments Section */}
             {planType !== 'full_payment' && (
               <section className="pt-4 border-t border-gray-200">
-                <div className="flex justify-between items-center mb-3">
+                <div className="flex justify-between items-center mb-2.5">
                   <h2 className="text-xs font-black text-gray-400 uppercase tracking-wider">Balloon Payments</h2>
                   <button
                     onClick={addBalloonRow}
-                    className="text-xs bg-[#003366] text-white px-2.5 py-1 rounded-md hover:bg-blue-900 transition font-semibold flex items-center gap-1"
+                    className="text-xs bg-[#003366] text-white px-2.5 py-1.5 rounded-md hover:bg-blue-900 transition font-semibold flex items-center gap-1"
                   >
                     <Plus className="w-3.5 h-3.5" /> Add Manual
                   </button>
@@ -240,24 +242,28 @@ export default function ModularCalculator({
                     <p className="text-xs text-gray-400 italic">No balloons added.</p>
                   ) : (
                     balloonPayments.map((b) => (
-                      <div key={b.id} className="flex gap-2 items-center bg-amber-50/60 p-2 rounded-lg border border-amber-200">
-                        <input
-                          type="number"
-                          placeholder="Mo"
-                          value={b.month}
-                          onChange={(e) => updateBalloon(b.id, 'month', parseInt(e.target.value) || 1)}
-                          className="w-16 p-1.5 border border-gray-300 rounded text-xs font-bold text-center"
-                        />
-                        <input
-                          type="number"
-                          placeholder="Amount"
-                          value={b.amount}
-                          onChange={(e) => updateBalloon(b.id, 'amount', parseFloat(e.target.value) || 0)}
-                          className="flex-1 p-1.5 border border-gray-300 rounded text-xs font-bold text-amber-800"
-                        />
+                      <div key={b.id} className="flex gap-2 items-center bg-amber-50/70 p-2 rounded-lg border border-amber-200">
+                        <div className="w-16">
+                          <label className="text-[9px] font-bold text-gray-400 block">MONTH</label>
+                          <input
+                            type="number"
+                            value={b.month}
+                            onChange={(e) => updateBalloon(b.id, 'month', parseInt(e.target.value) || 1)}
+                            className="w-full p-1.5 border border-gray-300 rounded text-xs font-bold text-center bg-white"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <label className="text-[9px] font-bold text-gray-400 block">AMOUNT (PKR)</label>
+                          <input
+                            type="number"
+                            value={b.amount}
+                            onChange={(e) => updateBalloon(b.id, 'amount', parseFloat(e.target.value) || 0)}
+                            className="w-full p-1.5 border border-gray-300 rounded text-xs font-bold text-amber-900 bg-white"
+                          />
+                        </div>
                         <button
                           onClick={() => removeBalloon(b.id)}
-                          className="text-red-400 hover:text-red-600 font-bold px-1 text-base"
+                          className="text-red-400 hover:text-red-600 font-bold p-1 text-lg mt-3"
                         >
                           ×
                         </button>
@@ -284,54 +290,54 @@ export default function ModularCalculator({
           </div>
 
           {/* Right Column Table & Summaries (8 Cols) */}
-          <div className="lg:col-span-8 p-6 lg:p-10 bg-white">
+          <div className="lg:col-span-8 p-4 sm:p-6 lg:p-10 bg-white">
             
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              <div className="border-l-4 border-[#D4AF37] bg-slate-50 p-4 rounded-r-lg shadow-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-6">
+              <div className="border-l-4 border-[#D4AF37] bg-slate-50 p-3.5 sm:p-4 rounded-r-lg shadow-sm">
                 <div className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Total Price</div>
-                <div className="text-2xl font-black text-[#003366] mt-1">{formatPKR(totalPrice)}</div>
+                <div className="text-xl sm:text-2xl font-black text-[#003366] mt-0.5">{formatPKR(totalPrice)}</div>
               </div>
               
-              <div className="border-l-4 border-[#D4AF37] bg-slate-50 p-4 rounded-r-lg shadow-sm">
+              <div className="border-l-4 border-[#D4AF37] bg-slate-50 p-3.5 sm:p-4 rounded-r-lg shadow-sm">
                 <div className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Down Payment ({downPaymentPercent}%)</div>
-                <div className="text-xl font-bold text-gray-800 mt-1">{formatPKR(downPayment)}</div>
+                <div className="text-lg sm:text-xl font-bold text-gray-800 mt-0.5">{formatPKR(downPayment)}</div>
               </div>
 
-              <div className="border-l-4 border-emerald-500 bg-slate-50 p-4 rounded-r-lg ring-2 ring-emerald-100 shadow-sm">
+              <div className="border-l-4 border-emerald-500 bg-slate-50 p-3.5 sm:p-4 rounded-r-lg ring-2 ring-emerald-100 shadow-sm sm:col-span-2 lg:col-span-1">
                 <div className="text-[10px] text-emerald-600 uppercase font-bold tracking-wider">
                   {planType === 'quarterly' ? 'Quarterly Installment' : (planType === 'full_payment' ? 'Full Cash Payment' : 'Monthly Installment')}
                 </div>
-                <div className="text-2xl font-black text-emerald-600 mt-1">
+                <div className="text-xl sm:text-2xl font-black text-emerald-600 mt-0.5">
                   {formatPKR(planType === 'full_payment' ? totalPrice - (totalPrice * (fullPaymentDiscountPercent/100)) : installment)}
                 </div>
               </div>
             </div>
 
             {/* Badges Bar */}
-            <div className="flex flex-wrap gap-3 mb-6 text-xs font-semibold">
-              <span className="bg-gray-100 px-3 py-1.5 rounded-full text-gray-600 border border-gray-200">
+            <div className="flex flex-wrap gap-2 mb-5 text-xs font-semibold">
+              <span className="bg-gray-100 px-3 py-1 rounded-full text-gray-600 border border-gray-200">
                 Possession ({possessionPercent}%): <strong>{formatPKR(possession)}</strong>
               </span>
               {totalBalloons > 0 && (
-                <span className="bg-amber-100 px-3 py-1.5 rounded-full text-amber-800 border border-amber-200">
+                <span className="bg-amber-100 px-3 py-1 rounded-full text-amber-800 border border-amber-200">
                   Total Balloons: <strong>{formatPKR(totalBalloons)}</strong>
                 </span>
               )}
             </div>
 
             {/* Live Interactive Schedule Table */}
-            <div className="overflow-hidden border border-gray-200 rounded-xl shadow-sm mb-8">
-              <div className="max-h-[500px] overflow-y-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-slate-100 sticky top-0 text-gray-600">
+            <div className="overflow-hidden border border-gray-200 rounded-xl shadow-sm mb-6">
+              <div className="max-h-[450px] overflow-y-auto overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
+                  <thead className="bg-slate-100 sticky top-0 text-gray-600 z-10">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Installment</th>
-                      <th className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Description & Date</th>
-                      <th className="px-6 py-3 text-right text-xs font-bold uppercase tracking-wider">Amount</th>
+                      <th className="px-3 sm:px-6 py-2.5 text-left font-bold uppercase tracking-wider">Installment</th>
+                      <th className="px-3 sm:px-6 py-2.5 text-left font-bold uppercase tracking-wider">Description & Date</th>
+                      <th className="px-3 sm:px-6 py-2.5 text-right font-bold uppercase tracking-wider">Amount</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200 text-sm">
+                  <tbody className="bg-white divide-y divide-gray-200">
                     {schedule.map((row) => {
                       const isBalloon = row.type === 'balloon';
                       const isDP = row.type === 'down_payment';
@@ -344,13 +350,13 @@ export default function ModularCalculator({
 
                       return (
                         <tr key={row.id} className={rowBg}>
-                          <td className="px-6 py-3 font-bold text-slate-800">
+                          <td className="px-3 sm:px-6 py-2.5 font-bold text-slate-800 whitespace-nowrap">
                             {row.installmentNo}
                           </td>
-                          <td className="px-6 py-3 text-slate-600 font-medium">
-                            {row.description} <span className="text-xs text-slate-400 font-normal ml-1">({row.date})</span>
+                          <td className="px-3 sm:px-6 py-2.5 text-slate-600 font-medium whitespace-nowrap">
+                            {row.description} <span className="text-[11px] text-slate-400 font-normal ml-1">({row.date})</span>
                           </td>
-                          <td className="px-6 py-3 text-right font-extrabold text-[#003366]">
+                          <td className="px-3 sm:px-6 py-2.5 text-right font-extrabold text-[#003366] whitespace-nowrap">
                             {formatPKR(row.amount)}
                           </td>
                         </tr>
@@ -361,12 +367,12 @@ export default function ModularCalculator({
               </div>
             </div>
 
-            {/* Download Button */}
-            <div className="flex justify-end pt-2">
+            {/* Desktop Download Button */}
+            <div className="hidden lg:flex justify-end pt-2">
               <button
                 onClick={onDownloadPdf}
                 disabled={isGeneratingPdf}
-                className="bg-gradient-to-r from-[#D4AF37] to-[#e6c25e] text-[#003366] font-extrabold px-10 py-4 rounded-xl shadow-xl hover:scale-105 transition-all text-sm flex items-center gap-3 disabled:opacity-50"
+                className="bg-gradient-to-r from-[#D4AF37] to-[#e6c25e] text-[#003366] font-extrabold px-8 py-3.5 rounded-xl shadow-xl hover:scale-105 transition-all text-sm flex items-center gap-2.5 disabled:opacity-50"
               >
                 <Download className="w-5 h-5" />
                 {isGeneratingPdf ? 'Generating PDF Proposal...' : 'Download PDF Proposal'}
@@ -377,6 +383,23 @@ export default function ModularCalculator({
 
         </div>
       </div>
+
+      {/* Floating Sticky Download Bar for Mobile Screens */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-slate-900/95 backdrop-blur border-t border-slate-800 z-50 shadow-2xl flex items-center justify-between gap-3">
+        <div className="text-white text-xs pl-2">
+          <div className="text-slate-400 text-[10px] uppercase font-bold">Total Price</div>
+          <div className="font-extrabold text-[#D4AF37] text-sm">{formatPKR(totalPrice)}</div>
+        </div>
+        <button
+          onClick={onDownloadPdf}
+          disabled={isGeneratingPdf}
+          className="bg-gradient-to-r from-[#D4AF37] to-[#e6c25e] text-[#003366] font-extrabold px-5 py-3 rounded-xl shadow-lg text-xs flex items-center gap-2 disabled:opacity-50"
+        >
+          <Download className="w-4 h-4" />
+          {isGeneratingPdf ? 'Exporting...' : 'Download PDF'}
+        </button>
+      </div>
+
     </div>
   );
 }

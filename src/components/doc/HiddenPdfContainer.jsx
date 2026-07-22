@@ -32,14 +32,20 @@ export default function HiddenPdfContainer({
     durationText = 'Lump Sum Cash';
   }
 
-  // 25 rows per page max
-  const ROWS_PER_PAGE = 25;
+  // 25 rows on page 1 of table, 30 rows on continuation page of table
+  const ROWS_PAGE_1 = 25;
+  const ROWS_PAGE_2 = 30;
+
   const scheduleChunks = [];
-  for (let i = 0; i < schedule.length; i += ROWS_PER_PAGE) {
-    scheduleChunks.push(schedule.slice(i, i + ROWS_PER_PAGE));
-  }
-  if (scheduleChunks.length === 0) {
-    scheduleChunks.push([]);
+  if (schedule.length <= ROWS_PAGE_1) {
+    scheduleChunks.push(schedule);
+  } else {
+    scheduleChunks.push(schedule.slice(0, ROWS_PAGE_1));
+    let remaining = schedule.slice(ROWS_PAGE_1);
+    while (remaining.length > 0) {
+      scheduleChunks.push(remaining.slice(0, ROWS_PAGE_2));
+      remaining = remaining.slice(ROWS_PAGE_2);
+    }
   }
 
   const dedicatedUnitPlanImg = `/unit_plans/${unitNo}.png`;
@@ -55,7 +61,7 @@ export default function HiddenPdfContainer({
           className="w-full h-full object-cover"
         />
 
-        {/* Dynamic Client Name & Unit No Overlays - Work Sans font, regular font weight, aligned left at 62px */}
+        {/* Dynamic Client Name & Unit No Overlays */}
         <div className="absolute top-[962px] left-[62px] z-10">
           <div className="text-[19px] font-bold text-white uppercase tracking-wider font-heading leading-none">
             {clientName || 'VALUED CLIENT'}
@@ -78,21 +84,26 @@ export default function HiddenPdfContainer({
         />
       </div>
 
-      {/* ================= PAGE 3 (+ CONTINUATION PAGE IF >25 ROWS): PAYMENT PLAN TABLE ================= */}
+      {/* ================= PAGE 3 (+ CONTINUATION PAGE IF NEEDED): PAYMENT PLAN TABLE ================= */}
       {scheduleChunks.map((chunk, pageIdx) => {
         const isFirstTablePage = pageIdx === 0;
+        const bgTemplate = isFirstTablePage
+          ? '/assets/template_table_page.png'
+          : '/assets/template_table_page_continuation.png';
+
+        const tableTopPx = isFirstTablePage ? '272px' : '138.1px';
 
         return (
           <div key={pageIdx} className="pdf-page-container relative bg-white overflow-hidden shadow-none">
-            {/* Background Image: Template Table Page */}
+            {/* Background Image Template */}
             <img
-              src="/assets/template_table_page.png"
-              alt="Techno One Table Page Template"
+              src={bgTemplate}
+              alt={`Techno One Table Page ${pageIdx + 1}`}
               className="w-full h-full object-cover"
             />
 
             {/* Summary Grid Overlay ONLY on Table Page 1 */}
-            {isFirstTablePage ? (
+            {isFirstTablePage && (
               <div className="absolute top-[112px] left-[50px] right-[50px] h-[100px] z-10 text-[12px] font-medium text-[#162840]">
                 {/* Row 1 */}
                 <div className="absolute top-[0px] left-[220px] w-[120px] text-right">
@@ -128,13 +139,10 @@ export default function HiddenPdfContainer({
                   {formatPKR(totalBalloonAmount)}
                 </div>
               </div>
-            ) : (
-              /* On Table Page 2+, cover/remove the summary section entirely with background color overlay */
-              <div className="absolute top-[48px] left-[45px] right-[45px] h-[178px] bg-[#f8f9fa] z-20"></div>
             )}
 
-            {/* Schedule Table Rows Overlay - Font size 12px, font-weight normal (400) */}
-            <div className="absolute top-[272px] left-[46.4px] w-[704px] z-30">
+            {/* Schedule Table Rows Overlay */}
+            <div className="absolute left-[46.4px] w-[704px] z-30" style={{ top: tableTopPx }}>
               <table className="w-full text-left border-collapse table-fixed">
                 <colgroup>
                   <col className="w-[176px]" />
