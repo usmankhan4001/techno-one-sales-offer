@@ -33,6 +33,19 @@ export const initBitrixPlacement = async () => {
   return new Promise((resolve) => {
     window.BX24.init(async () => {
       try {
+        // Auto-bind placement to Lead Detail Tab if not already registered
+        try {
+          const currentUrl = window.location.origin + window.location.pathname;
+          await callBX24Method('placement.bind', {
+            PLACEMENT: 'CRM_LEAD_DETAIL_TAB',
+            HANDLER: currentUrl,
+            TITLE: 'Techno One Sales Offer'
+          });
+          console.log('[Bitrix24] Bound CRM_LEAD_DETAIL_TAB placement successfully.');
+        } catch (bindErr) {
+          console.log('[Bitrix24] Placement bind note:', bindErr);
+        }
+
         const placementInfo = window.BX24.placement.info();
         console.log('[Bitrix24] Placement Info:', placementInfo);
 
