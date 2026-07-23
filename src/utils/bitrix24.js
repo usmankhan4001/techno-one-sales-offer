@@ -24,6 +24,20 @@ export const callBX24Method = (method, params = {}) => {
   });
 };
 
+// Dynamically adjust Bitrix24 Iframe height to fit content without inner scrolling
+export const fitBitrixWindow = () => {
+  if (isBitrixEnvironment() && window.BX24.fitWindow) {
+    setTimeout(() => {
+      try {
+        const bodyHeight = document.body.scrollHeight || document.documentElement.scrollHeight || 800;
+        window.BX24.fitWindow(bodyHeight + 30);
+      } catch (e) {
+        console.log('[Bitrix24] fitWindow note:', e);
+      }
+    }, 150);
+  }
+};
+
 // Initialize Bitrix24 Placement & Fetch Current Lead Information
 export const initBitrixPlacement = async () => {
   if (!isBitrixEnvironment()) {
@@ -45,6 +59,8 @@ export const initBitrixPlacement = async () => {
         } catch (bindErr) {
           console.log('[Bitrix24] Placement bind note:', bindErr);
         }
+
+        fitBitrixWindow();
 
         const placementInfo = window.BX24.placement.info();
         console.log('[Bitrix24] Placement Info:', placementInfo);
