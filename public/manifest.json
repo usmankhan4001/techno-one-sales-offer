@@ -1,0 +1,16 @@
+{
+  "short_name": "Techno One Offers",
+  "name": "Techno One - Sales Offer Generator",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "178x179"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#003366",
+  "theme_color": "#003366",
+  "display": "standalone",
+  "orientation": "portrait"
+}
