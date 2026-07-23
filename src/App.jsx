@@ -26,6 +26,42 @@ export default function App() {
   const [isAttachingBitrix, setIsAttachingBitrix] = useState(false);
   const [bitrixStatusMsg, setBitrixStatusMsg] = useState(null);
 
+  // PWA Install Prompt State
+  const [deferredInstallPrompt, setDeferredInstallPrompt] = useState(null);
+  const [isAppInstalled, setIsAppInstalled] = useState(false);
+
+  // Capture PWA Install Event
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredInstallPrompt(e);
+    };
+
+    const handleAppInstalled = () => {
+      setIsAppInstalled(true);
+      setDeferredInstallPrompt(null);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      const choiceResult = await deferredInstallPrompt.userChoice;
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted the PWA install prompt');
+      }
+      setDeferredInstallPrompt(null);
+    }
+  };
+
   // Initialize Bitrix24 Lead Placement on app load
   useEffect(() => {
     const checkBitrix = async () => {
@@ -95,7 +131,6 @@ export default function App() {
 
     try {
       setIsAttachingBitrix(true);
-      // 1. Generate PDF Proposal Blob
       const result = await generatePdfProposal({
         clientName,
         unitNo: selectedUnit?.unitNo || 'M-02'
@@ -105,7 +140,6 @@ export default function App() {
         throw new Error('Failed to generate proposal PDF blob.');
       }
 
-      // 2. Upload to Bitrix24 Lead Card & Timeline
       await attachProposalToLeadCard({
         leadId: bitrixLeadId,
         pdfBlob: result.blob,
@@ -124,16 +158,16 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 py-4 sm:py-6">
+    <div className="min-h-screen bg-slate-100 text-slate-900 py-3 sm:py-5">
       
       {/* Bitrix Status Message Banner */}
       {bitrixStatusMsg && (
-        <div className="max-w-7xl mx-auto px-4 mb-4">
-          <div className={`p-4 rounded-xl shadow-md text-xs font-bold flex items-center justify-between ${
+        <div className="max-w-7xl mx-auto px-4 mb-3">
+          <div className={`p-3.5 rounded-xl shadow-md text-xs font-bold flex items-center justify-between ${
             bitrixStatusMsg.type === 'success' ? 'bg-emerald-900 text-emerald-100 border border-emerald-500' : 'bg-red-900 text-red-100 border border-red-500'
           }`}>
             <span>{bitrixStatusMsg.text}</span>
-            <button onClick={() => setBitrixStatusMsg(null)} className="text-white hover:underline">✕ Close</button>
+            <button onClick={() => setBitrixStatusMsg(null)} className="text-white hover:underline ml-2">✕ Close</button>
           </div>
         </div>
       )}
@@ -167,6 +201,8 @@ export default function App() {
         bitrixLeadId={bitrixLeadId}
         onAttachToBitrix={handleAttachToBitrix}
         isAttachingBitrix={isAttachingBitrix}
+        canInstallPwa={Boolean(deferredInstallPrompt)}
+        onInstallPwa={handleInstallApp}
       />
 
       {/* Hidden PDF Export DOM Container */}

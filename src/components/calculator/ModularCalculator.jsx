@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { INVENTORY, formatPKR } from '../../data/inventoryData';
 import { fitBitrixWindow } from '../../utils/bitrix24';
-import { Plus, Trash2, Download, Paperclip, ChevronDown, CheckCircle } from 'lucide-react';
+import { Plus, Trash2, Download, Paperclip, ChevronDown, CheckCircle, Smartphone } from 'lucide-react';
 
 export default function ModularCalculator({
   projectName,
@@ -30,7 +30,9 @@ export default function ModularCalculator({
   isInBitrix,
   bitrixLeadId,
   onAttachToBitrix,
-  isAttachingBitrix
+  isAttachingBitrix,
+  canInstallPwa,
+  onInstallPwa
 }) {
 
   // Trigger Bitrix Iframe auto-resize on layout/data changes
@@ -77,7 +79,7 @@ export default function ModularCalculator({
     <div className="w-full max-w-full px-1 sm:px-3 lg:px-4 font-sans pb-24 lg:pb-6">
       <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200 text-slate-800">
         
-        {/* Top Compact Header Bar */}
+        {/* Top Header Bar */}
         <div className="bg-[#003366] p-3.5 sm:p-5 text-white flex flex-wrap justify-between items-center gap-3 shadow-md">
           <div className="flex items-center gap-3">
             <img
@@ -95,12 +97,24 @@ export default function ModularCalculator({
             </div>
           </div>
 
-          {bitrixLeadId && (
-            <div className="bg-white/10 border border-white/20 px-3 py-1 rounded-lg text-xs font-semibold text-[#D4AF37] flex items-center gap-1.5 ml-auto sm:ml-0">
-              <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Bitrix Lead #{bitrixLeadId} Active</span>
-            </div>
-          )}
+          <div className="flex items-center gap-2 ml-auto sm:ml-0">
+            {canInstallPwa && (
+              <button
+                onClick={onInstallPwa}
+                className="bg-[#D4AF37] hover:bg-amber-400 text-[#003366] font-extrabold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 shadow-md transition-all animate-pulse"
+              >
+                <Smartphone className="w-3.5 h-3.5" />
+                <span>Install Offline App</span>
+              </button>
+            )}
+
+            {bitrixLeadId && (
+              <div className="bg-white/10 border border-white/20 px-3 py-1 rounded-lg text-xs font-semibold text-[#D4AF37] flex items-center gap-1.5">
+                <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Bitrix Lead #{bitrixLeadId} Active</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Full Width Responsive Grid */}
