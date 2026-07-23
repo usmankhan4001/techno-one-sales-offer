@@ -1,6 +1,17 @@
 import React from 'react';
 import { formatPKR } from '../../data/inventoryData';
 
+// Helper to resolve asset paths safely under file:// protocol (Electron) and web
+function getAssetPath(path) {
+  if (!path) return '';
+  if (path.startsWith('data:') || path.startsWith('blob:')) return path;
+  if (path.startsWith('./')) return path;
+  if (path.startsWith('/')) {
+    return '.' + path;
+  }
+  return './' + path;
+}
+
 export default function HiddenPdfContainer({
   clientName = 'Valued Client',
   unitNo = 'M-02',
@@ -48,7 +59,11 @@ export default function HiddenPdfContainer({
     }
   }
 
-  const dedicatedUnitPlanImg = `/unit_plans/${unitNo}.png`;
+  const titlePageImg = getAssetPath('/assets/template_title_page.png');
+  const tablePageImg = getAssetPath('/assets/template_table_page.png');
+  const tableContinuationImg = getAssetPath('/assets/template_table_page_continuation.png');
+  const backCoverImg = getAssetPath('/assets/page_4_back_cover.png');
+  const dedicatedUnitPlanImg = getAssetPath(`/unit_plans/${unitNo}.png`);
 
   return (
     <div id="hidden-pdf-export-root" className="fixed top-[-9999px] left-[-9999px] opacity-0 pointer-events-none">
@@ -56,7 +71,7 @@ export default function HiddenPdfContainer({
       {/* ================= PAGE 1: COVER TITLE PAGE ================= */}
       <div className="pdf-page-container relative bg-white overflow-hidden shadow-none">
         <img
-          src="/assets/template_title_page.png"
+          src={titlePageImg}
           alt="Techno One Cover Title Page"
           className="w-full h-full object-cover"
         />
@@ -87,10 +102,7 @@ export default function HiddenPdfContainer({
       {/* ================= PAGE 3 (+ CONTINUATION PAGE IF NEEDED): PAYMENT PLAN TABLE ================= */}
       {scheduleChunks.map((chunk, pageIdx) => {
         const isFirstTablePage = pageIdx === 0;
-        const bgTemplate = isFirstTablePage
-          ? '/assets/template_table_page.png'
-          : '/assets/template_table_page_continuation.png';
-
+        const bgTemplate = isFirstTablePage ? tablePageImg : tableContinuationImg;
         const tableTopPx = isFirstTablePage ? '272px' : '138.1px';
 
         return (
@@ -180,7 +192,7 @@ export default function HiddenPdfContainer({
       {/* ================= FINAL PAGE: BACK COVER PAGE ================= */}
       <div className="pdf-page-container relative bg-[#162840] overflow-hidden shadow-none">
         <img
-          src="/assets/page_4_back_cover.png"
+          src={backCoverImg}
           alt="Techno One Back Cover"
           className="w-full h-full object-cover"
         />
