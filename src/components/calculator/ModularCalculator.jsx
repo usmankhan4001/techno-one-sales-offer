@@ -1,6 +1,6 @@
 import React from 'react';
 import { INVENTORY, formatPKR } from '../../data/inventoryData';
-import { Plus, Trash2, Download, Building2, Calendar, User, Upload, ChevronDown } from 'lucide-react';
+import { Plus, Trash2, Download, Paperclip, ChevronDown, CheckCircle } from 'lucide-react';
 
 export default function ModularCalculator({
   projectName,
@@ -25,7 +25,11 @@ export default function ModularCalculator({
   setBalloonPayments,
   calculation,
   onDownloadPdf,
-  isGeneratingPdf
+  isGeneratingPdf,
+  isInBitrix,
+  bitrixLeadId,
+  onAttachToBitrix,
+  isAttachingBitrix
 }) {
 
   const handleUnitChange = (e) => {
@@ -84,6 +88,13 @@ export default function ModularCalculator({
               </p>
             </div>
           </div>
+
+          {bitrixLeadId && (
+            <div className="bg-white/10 border border-white/20 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#D4AF37] flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-emerald-400" />
+              <span>Bitrix Lead #{bitrixLeadId} Active</span>
+            </div>
+          )}
         </div>
 
         {/* Responsive Grid */}
@@ -367,8 +378,19 @@ export default function ModularCalculator({
               </div>
             </div>
 
-            {/* Desktop Download Button */}
-            <div className="hidden lg:flex justify-end pt-2">
+            {/* Desktop Action Buttons */}
+            <div className="hidden lg:flex justify-end items-center gap-3 pt-2">
+              {isInBitrix && bitrixLeadId && (
+                <button
+                  onClick={onAttachToBitrix}
+                  disabled={isAttachingBitrix}
+                  className="bg-[#003366] hover:bg-blue-900 text-white font-extrabold px-6 py-3.5 rounded-xl shadow-lg transition-all text-sm flex items-center gap-2 disabled:opacity-50"
+                >
+                  <Paperclip className="w-4 h-4 text-[#D4AF37]" />
+                  {isAttachingBitrix ? 'Attaching to Lead...' : 'Attach to Bitrix Lead'}
+                </button>
+              )}
+
               <button
                 onClick={onDownloadPdf}
                 disabled={isGeneratingPdf}
@@ -385,19 +407,33 @@ export default function ModularCalculator({
       </div>
 
       {/* Floating Sticky Download Bar for Mobile Screens */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-slate-900/95 backdrop-blur border-t border-slate-800 z-50 shadow-2xl flex items-center justify-between gap-3">
-        <div className="text-white text-xs pl-2">
-          <div className="text-slate-400 text-[10px] uppercase font-bold">Total Price</div>
-          <div className="font-extrabold text-[#D4AF37] text-sm">{formatPKR(totalPrice)}</div>
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-3 bg-slate-900/95 backdrop-blur border-t border-slate-800 z-50 shadow-2xl flex items-center justify-between gap-2">
+        <div className="text-white text-xs pl-1">
+          <div className="text-slate-400 text-[9px] uppercase font-bold">Total Price</div>
+          <div className="font-extrabold text-[#D4AF37] text-xs sm:text-sm">{formatPKR(totalPrice)}</div>
         </div>
-        <button
-          onClick={onDownloadPdf}
-          disabled={isGeneratingPdf}
-          className="bg-gradient-to-r from-[#D4AF37] to-[#e6c25e] text-[#003366] font-extrabold px-5 py-3 rounded-xl shadow-lg text-xs flex items-center gap-2 disabled:opacity-50"
-        >
-          <Download className="w-4 h-4" />
-          {isGeneratingPdf ? 'Exporting...' : 'Download PDF'}
-        </button>
+
+        <div className="flex items-center gap-2">
+          {isInBitrix && bitrixLeadId && (
+            <button
+              onClick={onAttachToBitrix}
+              disabled={isAttachingBitrix}
+              className="bg-[#003366] text-white font-bold px-3 py-2.5 rounded-lg text-xs flex items-center gap-1 disabled:opacity-50"
+            >
+              <Paperclip className="w-3.5 h-3.5 text-[#D4AF37]" />
+              {isAttachingBitrix ? 'Attaching...' : 'Attach Lead'}
+            </button>
+          )}
+
+          <button
+            onClick={onDownloadPdf}
+            disabled={isGeneratingPdf}
+            className="bg-gradient-to-r from-[#D4AF37] to-[#e6c25e] text-[#003366] font-extrabold px-4 py-2.5 rounded-lg shadow-lg text-xs flex items-center gap-1.5 disabled:opacity-50"
+          >
+            <Download className="w-3.5 h-3.5" />
+            {isGeneratingPdf ? 'Exporting...' : 'Download PDF'}
+          </button>
+        </div>
       </div>
 
     </div>
