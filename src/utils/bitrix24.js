@@ -3,9 +3,15 @@
  * Integrates with Bitrix24 CRM Lead Card placements and REST API
  */
 
-// Check if running inside Bitrix24 Iframe context
+// Check if actually running inside Bitrix24 Iframe context (not standalone browser tab)
 export const isBitrixEnvironment = () => {
-  return typeof window !== 'undefined' && typeof window.BX24 !== 'undefined';
+  try {
+    const isIframe = window.self !== window.top;
+    const hasBX24 = typeof window !== 'undefined' && typeof window.BX24 !== 'undefined';
+    return isIframe && hasBX24;
+  } catch (e) {
+    return typeof window !== 'undefined' && typeof window.BX24 !== 'undefined';
+  }
 };
 
 // Generic wrapper for BX24.callMethod using Promises
@@ -26,7 +32,7 @@ export const callBX24Method = (method, params = {}) => {
 
 // Dynamically adjust Bitrix24 Iframe height to fit content without inner scrolling
 export const fitBitrixWindow = () => {
-  if (isBitrixEnvironment() && window.BX24.fitWindow) {
+  if (isBitrixEnvironment() && window.BX24 && window.BX24.fitWindow) {
     setTimeout(() => {
       try {
         const bodyHeight = document.body.scrollHeight || document.documentElement.scrollHeight || 800;
@@ -41,11 +47,27 @@ export const fitBitrixWindow = () => {
 // Initialize Bitrix24 Placement & Fetch Current Lead Information
 export const initBitrixPlacement = async () => {
   if (!isBitrixEnvironment()) {
+    console.log('[Bitrix24] Running standalone outside Bitrix iframe.');
     return { isBitrix: false, leadId: null, clientName: null };
   }
 
   return new Promise((resolve) => {
+    let resolved = false;
+
+    // Safety timeout in case BX24.init hangs outside iframe
+    const timer = setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        console.warn('[Bitrix24] Init timed out - falling back to standalone.');
+        resolve({ isBitrix: false, leadId: null, clientName: null });
+      }
+    }, 800);
+
     window.BX24.init(async () => {
+      if (resolved) return;
+      resolved = true;
+      clearTimeout(timer);
+
       try {
         // Auto-bind placement to Lead Detail Tab if not already registered
         try {
