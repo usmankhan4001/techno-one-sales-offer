@@ -2,11 +2,40 @@
   "name": "techno-one-sales-offer-generator",
   "private": true,
   "version": "1.0.0",
+  "description": "Techno One - Sales Offer Generator Windows Desktop Application",
+  "author": "Premier Choice International Developers",
+  "main": "electron/main.cjs",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "electron:dev": "vite",
+    "dist:win": "vite build && npx electron-builder --win --config.directories.output=C:/Users/USMANK~1/AppData/Local/Temp/opencode/dist_win && python -c \"import shutil, os; os.makedirs('release', exist_ok=True); shutil.copy('C:/Users/USMANK~1/AppData/Local/Temp/opencode/dist_win/Techno One Sales Offer Generator Setup 1.0.0.exe', 'release/Techno_One_Sales_Offer_Generator_Setup_1.0.0.exe')\""
+  },
+  "build": {
+    "appId": "com.premierchoiceint.techno-one-sales-offer",
+    "productName": "Techno One Sales Offer Generator",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "public/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Techno One Sales Offer Generator"
+    }
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -22,6 +51,8 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.0",
     "autoprefixer": "^10.4.19",
+    "electron": "^34.3.0",
+    "electron-builder": "^25.1.8",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
     "vite": "^5.2.11"

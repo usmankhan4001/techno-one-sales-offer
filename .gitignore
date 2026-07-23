@@ -3,10 +3,15 @@ node_modules
 .pnpm-store
 .yarn
 
-# Build outputs
+# Build & Executable outputs
 dist
 dist-ssr
+release/
+release_build/
+dist_app/
 *.local
+*.exe
+*.blockmap
 
 # Logs
 npm-debug.log*
